@@ -3,6 +3,7 @@ import * as PIXI from 'pixi.js';
 import chroma from 'chroma-js';
 import _N from '@wonderlandlabs/n';
 import SimplexNoise from 'simplex-noise';
+import { Vector2 } from 'three';
 
 const MOUSE_LERP = 0.89;
 const SHEET_PATH = '/orion-sprite-sheet/orion-sprites.json';
@@ -202,11 +203,10 @@ export default (stream) => {
     }, true)
     .addAction('updateMousePos', (store, x, y) => {
       if (_N(x).isValid) {
-        const oldX = store.get('x');
-        const oldY = store.get('y');
-        store.do.setX(lerp(oldX, x, MOUSE_LERP));
-        store.do.setY(lerp(oldY, y, MOUSE_LERP));
-        x = store.get('x');
+        const lerpPoint = store.get('lerpPoint');
+        store.do.setLerpPoint(lerpPoint.lerp({ x, y }, MOUSE_LERP));
+        store.do.setX(x);
+        store.do.setY(y);
         const width = store.get('width');
         const height = store.get('height');
         store.get('graphics').forEach((g) => {
@@ -235,8 +235,10 @@ export default (stream) => {
           // eslint-disable-next-line no-param-reassign
           g.position = { x: newX.value, y: g.position.y };
         }, true);
+        store.do.updateHex();
       }
-    })
+    }, true)
+    .addChild('lerpPoint', new Vector2(200, 200))
     .addAction('addCloud', (store, graphics) => {
       if (graphics) {
         store.get('graphics').add(graphics);
