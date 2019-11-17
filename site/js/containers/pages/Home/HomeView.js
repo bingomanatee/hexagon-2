@@ -11,8 +11,8 @@ width: 100%;
 export default class HomeView extends PureComponent {
   render() {
     return (
-      <Box fill direction="row" alignContent="stretch" align="stretch" as="section">
-        <Frame>
+      <Box className="site-frame" fill direction="row" alignContent="stretch" align="stretch" as="section">
+        <Frame className="site-frame">
           {this.props.children}
         </Frame>
       </Box>

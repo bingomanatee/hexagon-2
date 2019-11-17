@@ -16,7 +16,7 @@ export default class HomeContainer extends Component {
   render() {
     return (
       <HomeView reference={this.ref}>
-        <Heading dark level={1}>Welcome To Hexworld</Heading>
+        <Heading dark level={1}>Welcome To HexWorld</Heading>
       </HomeView>
     );
   }

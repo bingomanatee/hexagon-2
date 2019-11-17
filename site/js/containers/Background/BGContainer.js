@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { fromEvent } from 'rxjs';
-
 import { throttleTime } from 'rxjs/operators';
 import _ from 'lodash';
 import makeHomeStore from './bgStoreFactory';
@@ -21,7 +20,6 @@ export default class BGContainer extends Component {
       this.store.do.tryInit(ele, size);
     }
     this.moveSub = fromEvent(window, 'mousemove')
-      .pipe(throttleTime(10))
       .subscribe((event) => {
         this.store.do.updateMousePos(_.get(event, 'clientX', 0), _.get(event, 'clientY', 0));
       });
@@ -41,8 +39,7 @@ export default class BGContainer extends Component {
 
   render() {
     return (
-      <BGView reference={this.ref}>
-      </BGView>
+      <BGView reference={this.ref} />
     );
   }
 }

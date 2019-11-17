@@ -30,6 +30,10 @@ html {
   font-size: 1em;
   line-height: 1.4; }
 
+.site-frame {
+  background-color: rgba(0, 0, 0, 0) !important;
+  pointer-events: none; }
+
 /*
  * Remove text-shadow in selection highlight:
  * https://twitter.com/miketaylr/status/12228805301
