@@ -483,22 +483,22 @@ export default {
         small: {
           size: '34px',
           height: '40px',
-          maxWidth: '816px',
+          maxWidth: '100%',
         },
         medium: {
           size: '50px',
           height: '56px',
-          maxWidth: '1200px',
+          maxWidth: '100%',
         },
         large: {
           size: '82px',
           height: '88px',
-          maxWidth: '1968px',
+          maxWidth: '100%',
         },
         xlarge: {
           size: '114px',
           height: '120px',
-          maxWidth: '2736px',
+          maxWidth: '100%',
         },
       },
       2: {
@@ -506,22 +506,22 @@ export default {
         small: {
           size: '26px',
           height: '32px',
-          maxWidth: '624px',
+          maxWidth: '100%',
         },
         medium: {
           size: '34px',
           height: '40px',
-          maxWidth: '816px',
+          maxWidth: '100%',
         },
         large: {
           size: '50px',
           height: '56px',
-          maxWidth: '1200px',
+          maxWidth: '100%',
         },
         xlarge: {
           size: '66px',
           height: '72px',
-          maxWidth: '1584px',
+          maxWidth: '100%',
         },
       },
       3: {
@@ -529,22 +529,22 @@ export default {
         small: {
           size: '22px',
           height: '28px',
-          maxWidth: '528px',
+          maxWidth: '100%',
         },
         medium: {
           size: '26px',
           height: '32px',
-          maxWidth: '624px',
+          maxWidth: '100%',
         },
         large: {
           size: '34px',
           height: '40px',
-          maxWidth: '816px',
+          maxWidth: '100%',
         },
         xlarge: {
           size: '42px',
           height: '48px',
-          maxWidth: '1008px',
+          maxWidth: '100%',
         },
       },
       4: {
@@ -552,22 +552,22 @@ export default {
         small: {
           size: '18px',
           height: '24px',
-          maxWidth: '432px',
+          maxWidth: '100%',
         },
         medium: {
           size: '18px',
           height: '24px',
-          maxWidth: '432px',
+          maxWidth: '100%',
         },
         large: {
           size: '18px',
           height: '24px',
-          maxWidth: '432px',
+          maxWidth: '100%',
         },
         xlarge: {
           size: '18px',
           height: '24px',
-          maxWidth: '432px',
+          maxWidth: '100%',
         },
       },
       5: {
@@ -575,22 +575,18 @@ export default {
         small: {
           size: '16px',
           height: '22px',
-          maxWidth: '384px',
         },
         medium: {
           size: '16px',
           height: '22px',
-          maxWidth: '384px',
         },
         large: {
           size: '16px',
           height: '22px',
-          maxWidth: '384px',
         },
         xlarge: {
           size: '16px',
           height: '22px',
-          maxWidth: '384px',
         },
       },
       6: {
@@ -598,22 +594,18 @@ export default {
         small: {
           size: '14px',
           height: '20px',
-          maxWidth: '336px',
         },
         medium: {
           size: '14px',
           height: '20px',
-          maxWidth: '336px',
         },
         large: {
           size: '14px',
           height: '20px',
-          maxWidth: '336px',
         },
         xlarge: {
           size: '14px',
           height: '20px',
-          maxWidth: '336px',
         },
       },
     },

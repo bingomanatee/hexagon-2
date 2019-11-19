@@ -31,7 +31,6 @@ const ALPHA_SCALE = 1;
 let doneLoadingSprites;
 const loaderPromise = new Promise((done) => {
   doneLoadingSprites = done;
-  console.log('defined doneLoadingSprites');
 });
 
 PIXI.Loader.shared.add(SHEET_PATH).load(() => {
@@ -116,9 +115,7 @@ export default (stream) => {
         .map(_.shuffle)
         .value();
       store.get('cloudPointGroups').set(scaleName, cloudsGroupedByY);
-      console.log('awaiting loader promise');
       await loaderPromise;
-      console.log('done awaiting loader promise');
       store.do.drawClouds(scaleName, scale);
     })
     .addAction('drawClouds', (store, scaleName, scale) => {
@@ -150,7 +147,7 @@ export default (stream) => {
         console.log('error in drawClouds for ', scale, err);
         return;
       }
-      const row = c(0);
+      const row = c(0.5);
       const sheet = PIXI.Loader.shared.resources[SHEET_PATH].spritesheet;
       store.do.addCloud(row);
 
@@ -235,7 +232,6 @@ export default (stream) => {
           // eslint-disable-next-line no-param-reassign
           g.position = { x: newX.value, y: g.position.y };
         }, true);
-        store.do.updateHex();
       }
     }, true)
     .addChild('lerpPoint', new Vector2(200, 200))

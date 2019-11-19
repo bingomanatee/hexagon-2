@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import { fromEvent } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import React, {Component} from 'react';
+import {fromEvent} from 'rxjs';
+import {throttleTime} from 'rxjs/operators';
 import _ from 'lodash';
-import bgStreamFactory from './bgStreamFactory';
-import BGView from './BGView';
-import Context from '../bgContext';
+import fgStreamFactory from './fgStreamFactory';
+import FGView from './FGView';
 
-export default class BGContainer extends Component {
+export default class FGContainer extends Component {
   constructor(props) {
     super(props);
     this.ref = React.createRef();
-    this.stream = bgStreamFactory(props.size, props.history);
+    this.stream = fgStreamFactory(props);
+    this.state = {galaxy: null};
     this.resizeApp = _.debounce(() => this.stream.do.resizeApp(this.props.size), 200);
   }
 
   componentDidMount() {
-    const { size } = this.props;
+    const {size} = this.props;
     const ele = _.get(this, 'ref.current');
     if (ele) {
       this.stream.do.tryInit(ele, size);
@@ -26,10 +26,15 @@ export default class BGContainer extends Component {
         this.stream.do.updateMousePos(_.get(event, 'clientX', 0), _.get(event, 'clientY', 0));
       });
 
-    this.stream.subscribe(() => {
-      // this is one of the odd comp0onents that DOESN'T re-render on stream update
-    }, (err) => {
-      console.log('stream error: ', err);
+    this.stream.subscribe((stream) => {
+        this.setState({galaxy: stream.get('currentGalaxy')});
+      },
+      (err) => {
+        console.log('galaxy stream error: ', err);
+      });
+
+    this.stream.watch('currentGalaxy', (galaxy) => {
+      console.log('current galaxy: ', galaxy);
     });
   }
 
@@ -43,11 +48,7 @@ export default class BGContainer extends Component {
 
   render() {
     return (
-      <Context.Provider value={this.stream}>
-        <BGView reference={this.ref}>
-          {this.props.children}
-        </BGView>
-      </Context.Provider>
+      <FGView reference={this.ref} {...this.state} />
     );
   }
 }

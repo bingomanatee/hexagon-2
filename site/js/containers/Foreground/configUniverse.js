@@ -7,6 +7,7 @@ import { Vector2, Vector3 } from 'three';
 import * as PIXI from 'pixi.js';
 
 const transparent = chroma(0, 0, 0).num();
+const FADE_DURATION = 600;
 
 export default (stream) => {
   stream
@@ -16,11 +17,37 @@ export default (stream) => {
     .addAction('initUniverse', (store) => {
       const ug = new PIXI.Container();
       const app = store.get('app');
-      // const width = store.get('width');
-      // const height = store.get('height');
-      // cc.transform.pivot = { x: width / 2, y: height / 2 };
       app.stage.addChild(ug);
       store.do.setUniverseGroup(ug);
+    })
+    .addSubStream('currentGalaxy', null)
+    .addAction('updateCurrentGalaxy', (store) => {
+      const name = store.get('currentGalaxyName');
+      if (!name) {
+        return;
+      }
+      console.log('looking for galaxy ', name);
+
+      const hexes = store.get('hexagons');
+
+      const galaxy = store.get('currentGalaxy');
+      if (_.get(galaxy, 'cubeString') === name) {
+        return;
+      }
+
+
+      const iter = hexes.grid.getTileIterator();
+      while (!iter.done) {
+        const hex = iter.next();
+        if (!hex) {
+          break;
+        }
+        if (hex.cubeString === name) {
+          console.log('found galaxy', name, ':', hex)
+          store.do.setCurrentGalaxy(hex);
+          break;
+        }
+      }
     })
     .addAction('drawHexes', (store) => {
       const hexes = store.get('hexagons');
@@ -43,27 +70,60 @@ export default (stream) => {
 
         hex._pColor = chroma(255, _.random(0, 255), 0).num();
         const first = points[0];
-
         hex.drawOver = () => {
+          g.alpha = 1;
           g.clear();
-          g.beginFill(hex._pColor)
+          g.beginFill(hex._pColor, 0.5)
             .moveTo(first.x, first.y);
           points.slice(1).forEach(({ x, y }) => g.lineTo(x, y));
           g.endFill();
           g.calculateBounds();
+          hex.over = true;
+          hex.fading = false;
         };
-        hex.drawOut = () => {
-          g.clear();
-          g.beginFill(transparent, 0.1)
-            .moveTo(first.x, first.y);
-          points.slice(1).forEach(({ x, y }) => g.lineTo(x, y));
-          g.endFill();
+        hex.fade = () => {
+          if (hex.over) {
+            hex.fading = Date.now();
+            hex.over = false;
+            hex.drawOut();
+          }
+        };
 
-          g.lineStyle(1, hex._pColor, 0.1, 0.5, false)
-            .moveTo(first.x, first.y);
-          points.slice(1).forEach(({ x, y }) => g.lineTo(x, y));
-          g.calculateBounds();
+        hex.drawOut = () => {
+          if (hex.over) {
+            return;
+          }
+          if (!hex.fading) {
+            g.clear();
+            g.beginFill(transparent, 0.1)
+              .moveTo(first.x, first.y);
+            points.slice(1).forEach(({ x, y }) => g.lineTo(x, y));
+            g.endFill();
+
+            g.lineStyle(1, hex._pColor, 0.1, 0.5, false)
+              .moveTo(first.x, first.y);
+            points.slice(1).forEach(({ x, y }) => g.lineTo(x, y));
+            g.calculateBounds();
+          } else {
+            const elapsed = Date.now() - hex.fading;
+
+            if (elapsed > FADE_DURATION) {
+              hex.fading = false;
+              hex.drawOut();
+              g.alpha = 1;
+            } else {
+              g.alpha = ((FADE_DURATION - elapsed) / FADE_DURATION) ** 2;
+              requestAnimationFrame(() => hex.drawOut());
+            }
+          }
         };
+        g.on('mouseover', hex.drawOver);
+        g.on('mouseout', hex.fade);
+        g.on('click', () => {
+          store.do.setCurrentGalaxy(hex);
+          store.get('history').push(`/galaxy/${hex.cubeString}`);
+        });
+
         hex.graphics = g;
         ug.addChild(g);
         hex.drawOut();
@@ -109,7 +169,6 @@ export default (stream) => {
       } while (limit < 10);
 
       if (currentBest !== nearHex) {
-        console.log('moved near hex to ', currentBest);
         nearHex.drawOut();
         currentBest.drawOver();
         store.do.setMouseHex(currentBest);
