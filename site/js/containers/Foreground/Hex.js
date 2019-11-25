@@ -19,8 +19,6 @@ export default class Hex {
 
   set g(g) {
     this._g = g;
-    g.on('mouseover', this.drawOver);
-    g.on('mouseout', this.fade);
     g.interactive = true;
     g.interactiveChildren = true;
   }
@@ -41,21 +39,25 @@ export default class Hex {
   }
 
   hexLine() {
-    const g = this._g;
+    const g = this.g;
     g.moveTo(this.first.x, this.first.y);
     this.corners.slice(1).forEach(({ x, y }) => g.lineTo(x, y));
   }
 
   drawOver() {
-    const g = this._g;
-    g.alpha = 1;
-    g.beginFill(this._pColor, 0.5);
-    g.clear();
-    this.hexLine();
-    g.endFill();
+    const g = this.g;
+    try {
+      g.alpha = 1;
+      g.clear();
+      g.beginFill(this._pColor, 0.5);
+      this.hexLine();
+      g.endFill();
+      this.over = true;
+      this.fading = false;
+    } catch (err) {
+      console.log('drawOver error:', err, this);
+    }
     g.calculateBounds();
-    this.over = true;
-    this.fading = false;
   }
 
   fade() {
@@ -70,27 +72,31 @@ export default class Hex {
     if (this.over) {
       return;
     }
-    if (!this.fading) {
-      const g = this._g;
-      g.clear();
-      g.beginFill(transparent, 0.1);
-      this.hexLine();
-      g.endFill();
+    const g = this.g;
+    try {
+      if (!this.fading) {
+        g.clear();
+        g.beginFill(transparent, 0.1);
+        this.hexLine();
+        g.endFill();
 
-      g.lineStyle(1, this._pColor, 0.1, 0.5, false);
-      this.hexLine();
-      g.calculateBounds();
-    } else {
-      const elapsed = Date.now() - this.fading;
-
-      if (elapsed > FADE_DURATION) {
-        this.fading = false;
-        this.drawOut();
-        g.alpha = 1;
+        g.lineStyle(1, this._pColor, 0.1, 0.5, false);
+        this.hexLine();
       } else {
-        g.alpha = ((FADE_DURATION - elapsed) / FADE_DURATION) ** 2;
-        requestAnimationFrame(() => this.drawOut());
+        const elapsed = Date.now() - this.fading;
+
+        if (elapsed > FADE_DURATION) {
+          this.fading = false;
+          this.drawOut();
+          g.alpha = 1;
+        } else {
+          g.alpha = ((FADE_DURATION - elapsed) / FADE_DURATION) ** 2;
+          requestAnimationFrame(() => this.drawOut());
+        }
       }
+    } catch (err) {
+      console.log('drawOut error:', err, this);
     }
+    g.calculateBounds();
   }
 }

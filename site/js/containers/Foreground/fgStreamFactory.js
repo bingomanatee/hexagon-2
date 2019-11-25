@@ -5,10 +5,7 @@ import _ from 'lodash';
 import configUniverse from './configUniverse';
 
 let universe;
-export const getUniverse = () => {
-  console.log('retrieved universe', universe);
-  return universe;
-};
+export const getUniverse = () => universe;
 
 export default ({ size, history }) => {
   universe = new ValueStream('home-stream')
@@ -51,9 +48,15 @@ export default ({ size, history }) => {
         store.do.setY(y);
       }
     }, true);
+
   configUniverse(universe);
 
-  universe.watch('currentGalaxyName', 'updateCurrentGalaxy');
+  universe.watch('currentGalaxyName', ({ name, value }) => {
+    console.log('watch: current galaxy name set to ', value);
+    if (!value) {
+      universe.do.setCurrentGalaxy(null);
+    } else universe.do.tryToLoadGalaxyFromName();
+  });
 
   return universe;
 };

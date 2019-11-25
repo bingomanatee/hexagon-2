@@ -10,10 +10,10 @@ height: 100%;
 position: absolute;
 top: 0;
 left: 0;
-z-index: 10000;
+z-index: 1000;
 `;
 
-const HIDE = { display: 'none' };
+const HIDE = { display: 'none', zIndex: -1000 };
 const SHOW = {};
 
 export default class FGView extends PureComponent {

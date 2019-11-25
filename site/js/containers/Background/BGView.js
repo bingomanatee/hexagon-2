@@ -18,8 +18,7 @@ export default class BGView extends PureComponent {
   render() {
     return (
       <>
-        <Frame ref={this.props.reference} />
-        {this.props.children}
+        <Frame ref={this.props.reference} />    {this.props.children}
       </>
     );
   }

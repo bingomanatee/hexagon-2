@@ -16,32 +16,20 @@ export default (stream) => {
       store.do.setUniverseGroup(ug);
     })
     .addSubStream('currentGalaxy', null)
-    .addAction('updateCurrentGalaxy', (store) => {
+    .addAction('updateCurrentGalaxy', (store, secondTry) => {
+      const hexMap = store.get('hexMap');
       const name = store.get('currentGalaxyName');
       if (!name) {
         return;
       }
       console.log('looking for galaxy ', name);
-
-      const hexes = store.get('hexagons');
-
-      const galaxy = store.get('currentGalaxy');
-      if (_.get(galaxy, 'cubeString') === name) {
-        return;
-      }
-
-
-      const iter = hexes.grid.getTileIterator();
-      while (!iter.done) {
-        const hex = iter.next();
-        if (!hex) {
-          break;
-        }
-        if (hex.cubeString === name) {
-          console.log('found galaxy', name, ':', hex);
-          store.do.setCurrentGalaxy(hex);
-          break;
-        }
+      if (hexMap.has(name)) {
+        store.do.setCurrentGalaxy(hexMap.get(name));
+        console.log('choosing current galaxy ', hexMap.get(name));
+      } else if (!secondTry) {
+        setTimeout(() => {
+          stream.do.updateCurrentGalaxy(true);
+        }, 1000);
       }
     })
     .addAction('drawHexes', (store) => {
@@ -60,14 +48,20 @@ export default (stream) => {
         hexMap.set(hex.id, hex);
 
         g.on('click', () => {
-          store.do.setCurrentGalaxy(hex);
+          console.log('hex click:', hex);
           store.get('history').push(`/galaxy/${hex.id}`);
         });
+
+        g.on('mouseover', () => hex.drawOver());
+        g.on('mouseout', () => hex.fade());
 
         ug.addChild(g);
         hex.drawOut();
       });
       store.do.setMouseHex(null);
+    })
+    .addAction('tryToLoadGalaxyFromName', (store) => {
+      store.do.updateCurrentGalaxy();
     })
     .addAction('updateHex', (store) => {
       const x = store.get('x');

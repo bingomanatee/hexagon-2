@@ -40,7 +40,7 @@ export default ({children}) => {
                       gap="large"
                       pad="small"
                       align="stretch"
-                      fill="true"
+                      fill="horizontal"
           >
             <ThemeContext.Extend
               value={smallButtonTheme}
@@ -55,7 +55,7 @@ export default ({children}) => {
                       direction="column"
                       gap="large"
                       pad="none"
-                      fill={true}
+                      fill="vertical"
           >
             <ThemeContext.Extend
               value={buttonTheme}

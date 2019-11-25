@@ -31,8 +31,7 @@ html {
   line-height: 1.4; }
 
 .site-frame {
-  background-color: rgba(0, 0, 0, 0) !important;
-  pointer-events: none; }
+  background-color: rgba(0, 0, 0, 0) !important; }
 
 /*
  * Remove text-shadow in selection highlight:

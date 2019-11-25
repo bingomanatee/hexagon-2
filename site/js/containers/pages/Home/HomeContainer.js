@@ -4,13 +4,27 @@ import _ from 'lodash';
 import { Heading, Text } from 'grommet';
 import HomeView from './HomeView';
 
+import { getUniverse } from '../../Foreground/fgStreamFactory';
+
 export default class HomeContainer extends Component {
   constructor(props) {
     super(props);
   }
 
   componentDidMount() {
+    this.mounted = true;
+    this._tryToGetUniverse();
+  }
 
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  _tryToGetUniverse() {
+    const u = getUniverse();
+    if (u) {
+      u.do.setCurrentGalaxyName('');
+    }
   }
 
   render() {

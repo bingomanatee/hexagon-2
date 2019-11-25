@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {fromEvent} from 'rxjs';
-import {throttleTime} from 'rxjs/operators';
+import React, { Component } from 'react';
+import { fromEvent } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 import _ from 'lodash';
 import fgStreamFactory from './fgStreamFactory';
 import FGView from './FGView';
@@ -10,12 +10,12 @@ export default class FGContainer extends Component {
     super(props);
     this.ref = React.createRef();
     this.stream = fgStreamFactory(props);
-    this.state = {galaxy: null};
+    this.state = { galaxy: null };
     this.resizeApp = _.debounce(() => this.stream.do.resizeApp(this.props.size), 200);
   }
 
   componentDidMount() {
-    const {size} = this.props;
+    const { size } = this.props;
     const ele = _.get(this, 'ref.current');
     if (ele) {
       this.stream.do.tryInit(ele, size);
@@ -27,11 +27,12 @@ export default class FGContainer extends Component {
       });
 
     this.stream.subscribe((stream) => {
-        this.setState({galaxy: stream.get('currentGalaxy')});
-      },
-      (err) => {
-        console.log('galaxy stream error: ', err);
-      });
+      const galaxy = stream.get('currentGalaxy');
+      if (galaxy !== _.get(this, 'state.galaxy')) this.setState({ galaxy });
+    },
+    (err) => {
+      console.log('galaxy stream error: ', err);
+    });
 
     this.stream.watch('currentGalaxy', (galaxy) => {
       console.log('current galaxy: ', galaxy);
