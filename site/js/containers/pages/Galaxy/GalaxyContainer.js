@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import _ from 'lodash';
-import { Heading, Text } from 'grommet';
 import GalaxyView from './GalaxyView';
 import { getUniverse } from '../../Foreground/fgStreamFactory';
 
@@ -20,7 +18,6 @@ export default class GalaxyContainer extends Component {
   _tryToGetUniverse() {
     const u = getUniverse();
     if (u) {
-      console.log('retrieved universe in Galaxy Container');
       this.setState({ uStream: u });
       u.do.setCurrentGalaxyName(this.state.id);
     }
