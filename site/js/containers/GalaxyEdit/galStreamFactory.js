@@ -13,6 +13,9 @@ const ACCENT_2 = chroma(122, 29, 29).num();
 const ACCENT_2_LIGHT = chroma(122, 29, 29).brighten(1).num();
 const TEXT_COLOR = chroma(216, 210, 142).num();
 
+const GALAXY_RADIUS = 25;
+const GALAXY_MARGIN = 5;
+
 const drawAddButtonRect = (rect, color) => {
   rect
     .clear()
@@ -67,7 +70,7 @@ export default ({ size, galaxy }) => {
         const width = stream.get('width');
         const height = stream.get('height');
 
-        const scale = _N(width).min(height).div(20).value;
+        const scale = _N(width).min(height).div(2 * GALAXY_RADIUS).value;
         stream.do.setMatrix(new Hexes({ scale, pointy: true }));
 
         const center = new Vector2(width, height);
@@ -97,7 +100,7 @@ export default ({ size, galaxy }) => {
         center.multiplyScalar(0.5);
         // eslint-disable-next-line arrow-body-style
         const galaxyHexes = matrix.floodQuery((point, coord) => {
-          return _N(coord.x).abs().max(_N(coord.y).abs()).max(_N(coord.z).abs()).value <= 10;
+          return _N(coord.x).abs().max(_N(coord.y).abs()).max(_N(coord.z).abs()).value <= GALAXY_RADIUS;
         }, -center.x, -center.y, center.x, center.y, false);
 
         const gSectors = galaxyHexes.map((coord) => new Sector(coord, matrix, store));
@@ -117,10 +120,29 @@ export default ({ size, galaxy }) => {
       const noise = store.get('noise');
       const secs = store.get('sectors');
       const densityMap = store.get('densityMap');
-
       secs.forEach((sector) => {
         const value = noise.noise3D(sector.xDec, sector.yDec, sector.zDec);
-        densityMap.set(sector.id, _N(value).plus(1).div(2).value);
+        const platonicPoint = sector.coord.toXY({ scale: 1, pointy: sector.matrix.pointy });
+        const radialDistance = platonicPoint.distanceTo({ x: 0, y: 0 });
+        const extent = _N(radialDistance).div(GALAXY_RADIUS + GALAXY_MARGIN);
+        const extentAngle = _N(extent).times(Math.PI).times(2);
+        const galaxyValue = _N(Math.atan2(platonicPoint.x, platonicPoint.y))
+          .plus(extentAngle)
+          .times(6).sin()
+          .plus(1)
+          .div(2);
+        const noiseValue = _N(value).plus(1).div(2).value;
+
+        const finalValue = _N(noiseValue)
+          .times(galaxyValue)
+          .plus(
+            _N(0.5)
+              .minus(extent)
+              .times(2),
+          )
+          .clamp(0, 1)
+          .value;
+        densityMap.set(sector.id, finalValue);
       });
       store.do.setHasGalaxy(true);
     }, true)
