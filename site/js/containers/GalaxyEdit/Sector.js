@@ -43,11 +43,11 @@ class Sector {
 
   get z() { return this.coord.z; }
 
-  get xDec() { return _N(this.x).plus(20).div(40).value; }
+  get xDec() { return _N(this.x).plus(20).div(5).value; }
 
-  get yDec() { return _N(this.y).plus(20).div(40).value; }
+  get yDec() { return _N(this.y).plus(20).div(5).value; }
 
-  get zDec() { return _N(this.z).plus(20).div(40).value; }
+  get zDec() { return _N(this.z).plus(20).div(5).value; }
 
   hexLine(g) {
     g.moveTo(this.first.x, this.first.y);
