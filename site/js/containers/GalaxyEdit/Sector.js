@@ -2,8 +2,11 @@ import chroma from 'chroma-js';
 import * as PIXI from 'pixi.js';
 import _N from '@wonderlandlabs/n';
 import _ from 'lodash';
-
-const DENSITY_COLOR = chroma(225, 245, 255).num();
+import {
+  DEN_COLOR_2, DEN_COLOR_3, DEN_COLOR_1, DEN_COLOR_4,
+  DEN_2_BRACKET, DEN_3_BRACKET, DEN_4_BRACKET,
+  SECTOR_LINE_COLOR
+} from '../../graphColors';
 /**
  * Sector represents about a region of space in a Hex.
  * It can contain none or many stars.
@@ -72,19 +75,30 @@ class Sector {
 
   drawOutline() {
     const hex = this.graphic;
-    hex.lineStyle(4, this._lineColor, 0.8, 1, true);
+    hex.lineStyle(4, SECTOR_LINE_COLOR.num(), 0.8, 1, true);
     this.hexLine(hex);
   }
 
   drawDensity() {
     const center = this.coord.toXY(this.matrix);
-    const radius = _N(this.density, 0)
+    const radius = this.density ? _N(this.density, 0)
+      .max(0.2)
       .times(this.matrix.scale)
       .div(3)
-      .value;
+      .value : 0;
 
+    let color = DEN_COLOR_1;
+    if (this.density > DEN_2_BRACKET) {
+      color = DEN_COLOR_2;
+    }
+    if (this.density > DEN_3_BRACKET) {
+      color = DEN_COLOR_3;
+    }
+    if (this.density > DEN_4_BRACKET) {
+      color = DEN_COLOR_4;
+    }
 
-    this.graphic.beginFill(DENSITY_COLOR)
+    this.graphic.beginFill(color.num())
       .drawCircle(center.x, center.y, radius)
       .endFill();
   }
@@ -92,7 +106,7 @@ class Sector {
   render() {
     try {
       this.addGraphicToGG();
-      this.drawOutline();
+      if (!this.density) this.drawOutline();
       this.drawDensity();
     } catch (err) {
       console.log('error rendering:', err);

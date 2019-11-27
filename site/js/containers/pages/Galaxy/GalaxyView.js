@@ -5,6 +5,7 @@ import {
   Box, Heading, Text, Grid,
 } from 'grommet';
 import GalaxyEditor from '../../GalaxyEdit';
+import GalaxyTicket from './GalaxyTicket';
 
 export default class GalaxyView extends PureComponent {
   render() {
@@ -15,11 +16,12 @@ export default class GalaxyView extends PureComponent {
     return (
       <Grid
         rows={['10rem', '1fr']}
-        columns={['small', 'auto']}
+        columns={['15rem', 'auto']}
         gap="small"
         fill="vertical"
         areas={[
-          { name: 'header', start: [0, 0], end: [1, 0] },
+          { name: 'header', start: [1, 0], end: [1, 0] },
+          { name: 'ticket', start: [0, 0], end: [0, 0] },
           { name: 'main', start: [0, 1], end: [1, 1] },
         ]}
       >
@@ -28,6 +30,9 @@ export default class GalaxyView extends PureComponent {
             {`Galaxy ${galaxyName}`}
           </Heading>
           <Text textAlign="center">Click on an area to view a sector</Text>
+        </Box>
+        <Box gridArea="ticket">
+          <GalaxyTicket />
         </Box>
         <Box gridArea="main">
           <GalaxyEditor galaxy={galaxy} sectors={sectors} setSectors={setSectors} />

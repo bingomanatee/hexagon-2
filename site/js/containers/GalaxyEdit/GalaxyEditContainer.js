@@ -9,42 +9,6 @@ import _ from 'lodash';
 import galStreamFactory from './galStreamFactory';
 import GalaxyEditView from './GalaxyEditView';
 
-const TextFrame = styled.article`
-width: 25%;
-padding: 2rem;
-height:25%;
-background-color: black;
-border: 6px solid rgba(200,200,200,0.25);
-margin: 4px;
-border-radius: 1rem 1rem 4rem 1rem;
-`;
-
-class GalaxyTicket extends Component {
-  render() {
-    console.log('ticket props:', this.props);
-    const { galaxy, hasGalaxy } = this.props;
-    if (!galaxy) return <span>&nbsp;</span>;
-
-    let label = 'This sector of the universe';
-    if (galaxy) label = `Sector ${galaxy.id}`;
-    return (
-      <Box directon="column" fill="vertical" align="stretch" alignContent="stretch">
-        <TextFrame>
-          <Box direction="column" fill="vertical" alignContent="between">
-            <Box flex="grow">
-              <Text>
-                {hasGalaxy
-                  ? `${label} has a galaxy`
-                  : `${label} is empty`}
-              </Text>
-            </Box>
-          </Box>
-        </TextFrame>
-      </Box>
-    );
-  }
-}
-
 export default class GalaxyEditContainer extends Component {
   constructor(props) {
     super(props);
@@ -95,10 +59,7 @@ export default class GalaxyEditContainer extends Component {
     const { hasGalaxy, galaxy } = this.state;
     console.log('rendering with galaxy:', galaxy);
     return (
-      <Stack interactiveChild="last" guidingChild="last">
-        <GalaxyTicket galaxy={galaxy} hasGalaxy={hasGalaxy} />
-        <GalaxyEditView reference={this.ref} />
-      </Stack>
+      <GalaxyEditView reference={this.ref} />
     );
   }
 }

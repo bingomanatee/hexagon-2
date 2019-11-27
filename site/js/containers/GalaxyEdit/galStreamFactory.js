@@ -14,7 +14,7 @@ const ACCENT_2_LIGHT = chroma(122, 29, 29).brighten(1).num();
 const TEXT_COLOR = chroma(216, 210, 142).num();
 
 const GALAXY_RADIUS = 25;
-const GALAXY_MARGIN = 5;
+const GALAXY_MARGIN = 2;
 
 const drawAddButtonRect = (rect, color) => {
   rect
@@ -124,7 +124,7 @@ export default ({ size, galaxy }) => {
         const value = noise.noise3D(sector.xDec, sector.yDec, sector.zDec);
         const platonicPoint = sector.coord.toXY({ scale: 1, pointy: sector.matrix.pointy });
         const radialDistance = platonicPoint.distanceTo({ x: 0, y: 0 });
-        const extent = _N(radialDistance).div(GALAXY_RADIUS + GALAXY_MARGIN);
+        const extent = _N(radialDistance).div(GALAXY_RADIUS - GALAXY_MARGIN);
         const extentAngle = _N(extent).times(Math.PI).times(2);
         const galaxyValue = _N(Math.atan2(platonicPoint.x, platonicPoint.y))
           .plus(extentAngle)
@@ -144,6 +144,9 @@ export default ({ size, galaxy }) => {
           .value;
         densityMap.set(sector.id, finalValue);
       });
+      let d = 0;
+      densityMap.forEach((value) => { d += value; });
+      console.log('---- total density:', d);
       store.do.setHasGalaxy(true);
     }, true)
     .addAction('drawGridSectors', (store) => {
