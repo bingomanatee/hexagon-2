@@ -475,7 +475,7 @@ export default {
     font: {},
     color: {
       dark: 'black',
-      light: 'white'
+      light: 'white',
     },
     level: {
       1: {

@@ -1,14 +1,17 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import _ from 'lodash';
 import GalaxyView from './GalaxyView';
-import {getUniverse} from '../../Foreground/fgStreamFactory';
+import { getUniverse } from '../../Foreground/fgStreamFactory';
 
 export default class GalaxyContainer extends Component {
   constructor(props) {
     super(props);
     const galaxyName = _.get(props, 'match.params.id', '---');
-    this.state = {uStream: null, id: galaxyName};
+    this.state = {
+      universe: null, id: galaxyName, galaxy: null, sectors: [],
+    };
     console.log('galaxy name:', galaxyName);
+    this.setSectors = this.setSectors.bind(this);
   }
 
   componentDidMount() {
@@ -21,16 +24,26 @@ export default class GalaxyContainer extends Component {
   }
 
   _tryToGetUniverse() {
-    const u = getUniverse();
-    if (u) {
+    const universe = getUniverse();
+    if (universe) {
       if (this.mounted) {
-        this.setState({uStream: u});
-      }
-      const {id} = this.state;
-      if (id) {
-        u.do.setCurrentGalaxyName(id);
+        const galaxy = universe.get('currentGalaxy');
+        const sectors = _.get(galaxy, 'sectors', []);
+        this.setState({ universe, galaxy, sectors });
       }
 
+      universe.watch('currentGalaxy', ({ value }) => {
+        console.log('watching galaxy -- got ', value);
+        if (value !== this.state.galaxy) {
+          const sectors = _.get(value, 'sectors', []);
+          this.setState({ galaxy: value, sectors });
+        }
+      });
+
+      const { id } = this.state;
+      if (id) {
+        universe.do.setCurrentGalaxyName(id);
+      }
     } else {
       requestAnimationFrame(() => {
         this._tryToGetUniverse();
@@ -38,9 +51,21 @@ export default class GalaxyContainer extends Component {
     }
   }
 
+  setSectors(sectors) {
+    if (Array.isArray(sectors)) {
+      this.setState({ sectors });
+    }
+  }
+
   render() {
+    const { id, galaxy, sectors } = this.state;
     return (
-      <GalaxyView galaxyName={this.state.id}/>
+      <GalaxyView
+        setSectors={this.setSectors}
+        sectors={sectors}
+        galaxyName={id}
+        galaxy={galaxy}
+      />
     );
   }
 }

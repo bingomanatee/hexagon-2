@@ -1,16 +1,36 @@
 import chroma from 'chroma-js';
 import _ from 'lodash';
+import Noise from 'simplex-noise';
 
 const FADE_DURATION = 600;
 
 const transparent = chroma(0, 0, 0).num();
 
+/**
+ * Hex is a galaxy sized chunk of space. It is the top-level entity in
+ * Hexagon.
+ */
 export default class Hex {
   constructor(coord, matrix, g) {
     this.coord = coord;
     this.matrix = matrix;
     this._pColor = chroma(255, _.random(0, 255), 0).num();
     this.g = g;
+
+    this._sectors = [];
+  }
+
+  linkToSectorStream(ss) {
+    this.sectorStream = ss;
+    ss.do.setGalaxy(this);
+  }
+
+  get sectors() {
+    return this._sectors;
+  }
+
+  set sectors(value) {
+    this._sectors = value;
   }
 
   get g() {
